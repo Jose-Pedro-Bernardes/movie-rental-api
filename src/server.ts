@@ -1,4 +1,4 @@
-import AppDataSource from "./data-source";
+import { AppDataSource } from "./data-source";
 import app from "./app";
 
 const PORT: number = parseInt(process.env.PORT!) || 3000;
