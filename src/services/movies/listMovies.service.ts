@@ -1,58 +1,62 @@
 import { AppDataSource } from "../../data-source";
 import { Movie } from "../../entities/index";
-import { TMovieRepo } from "../../interfaces/movies.interfaces";
+import {
+  TMoviePagination,
+  TMovieRepo,
+} from "../../interfaces/movies.interfaces";
 import { moviesArraySchema } from "../../schemas/movies.schemas";
 
 const listMoviesService = async (payload: any) => {
   const { page, perPage, sort, order } = payload;
   const movieRepository: TMovieRepo = AppDataSource.getRepository(Movie);
 
-  let pageResult: number = page && parseInt(page) > 0 ? parseInt(page) : 1;
+  let pageNumber: number = page && parseInt(page) > 0 ? parseInt(page) : 1;
 
-  let perPageResult: number =
+  let itemsPerPage: number =
     perPage && parseInt(perPage) > 0 ? parseInt(perPage) : 5;
 
-  if (perPageResult > 5) {
-    perPageResult = 5;
+  if (itemsPerPage > 5) {
+    itemsPerPage = 5;
   }
 
-  let sortResult: string =
-    sort === "price" || sort === "duration" ? sort : "id";
+  let sortField: string = sort === "price" || sort === "duration" ? sort : "id";
 
-  let orderResult: string = order === "asc" || order === "desc" ? order : "ASC";
+  let sortOrder: string = order === "asc" || order === "desc" ? order : "ASC";
 
-  if (sortResult === "id" || sort === null) {
-    orderResult = "ASC";
+  if (sortField === "id" || sort === null) {
+    sortOrder = "ASC";
   }
 
   const [movies, count] = await movieRepository.findAndCount({
-    take: perPageResult,
-    skip: perPageResult * (pageResult - 1),
+    take: itemsPerPage,
+    skip: itemsPerPage * (pageNumber - 1),
     order: {
-      [sortResult]: orderResult,
+      [sortField]: sortOrder,
     },
   });
 
-  const totalPages = Math.ceil(count / perPageResult);
+  const totalPages = Math.ceil(count / itemsPerPage);
 
-  const result = {
-    nextPage:
-      pageResult < totalPages
-        ? `http://localhost:3000/movies?page=${
-            pageResult + 1
-          }&perPage=${perPageResult}`
-        : null,
-    prevPage:
-      pageResult > 1
-        ? `http://localhost:3000/movies?page=${
-            pageResult - 1
-          }&perPage=${perPageResult}`
-        : null,
+  const moviePagination: TMoviePagination = {
+    nextPage: null,
+    prevPage: null,
     count,
     data: moviesArraySchema.parse(movies),
   };
 
-  return result;
+  if (pageNumber < totalPages) {
+    moviePagination.nextPage = `http://localhost:3000/movies?page=${
+      pageNumber + 1
+    }&perPage=${itemsPerPage}`;
+  }
+
+  if (pageNumber > 1) {
+    moviePagination.prevPage = `http://localhost:3000/movies?page=${
+      pageNumber - 1
+    }&perPage=${itemsPerPage}`;
+  }
+
+  return moviePagination;
 };
 
 export { listMoviesService };

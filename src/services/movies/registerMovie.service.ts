@@ -1,6 +1,6 @@
 import { AppDataSource } from "../../data-source";
 import { Movie } from "../../entities";
-import { TMovie, TMovieRepo } from "../../interfaces/movies.interfaces";
+import { TMovieRepo } from "../../interfaces/movies.interfaces";
 
 const registerMovieService = async (payload: any) => {
   const movieRepository: TMovieRepo = AppDataSource.getRepository(Movie);

@@ -17,8 +17,6 @@ const movieResSchema = movieSchema.extend({
 const moviesArraySchema = movieResSchema.array();
 const movieUpdateSchema = movieResSchema.partial();
 
-const sortSchema = z.enum(["id", "duration", "price"]).default("id");
-
 const moviePaginationSchema = z.object({
   prevPage: z.string().nullable(),
   nextPage: z.string().nullable(),
@@ -28,15 +26,6 @@ const moviePaginationSchema = z.object({
 
 interface FieldErrors {
   [key: string]: string[];
-}
-
-interface NestedErrors {
-  message: FieldErrors;
-}
-
-interface ZodError {
-  path: string[];
-  message: string;
 }
 
 function formatErrors(errors: any) {
@@ -56,7 +45,6 @@ export {
   movieSchema,
   moviesArraySchema,
   movieUpdateSchema,
-  sortSchema,
   moviePaginationSchema,
   formatErrors,
   movieResSchema,

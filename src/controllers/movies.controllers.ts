@@ -1,16 +1,11 @@
 import { Request, Response } from "express";
-import {
-  TMovie,
-  TMovieUpdate,
-  TMoviesArray,
-} from "../interfaces/movies.interfaces";
 import { registerMovieService } from "../services/movies/registerMovie.service";
 import { listMoviesService } from "../services/movies/listMovies.service";
 import { removeMovieService } from "../services/movies/removeMovie.service";
 import { updateMovieService } from "../services/movies/updateMovie.service";
 
 const registerMovieController = async (req: Request, res: Response) => {
-  const payload: TMovie = req.body;
+  const payload = req.body;
   const newMovie = await registerMovieService(payload);
 
   res.status(201).json(newMovie);
